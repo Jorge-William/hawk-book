@@ -31,6 +31,8 @@ model Candidato {
   bairro          String
   cep             Int
   curso           Curso_candidato[]
+  img_frente      String
+  img_perfil      String
 
   @@unique([cpf_num])
   @@map("candidatos")
