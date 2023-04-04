@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+model Candidato {
+  id              String            @id @default(uuid())
+  nome            String
+  cpf_num         Int
+  data_nascimento DateTime
+  nome_da_mae     String
+  nome_do_pai     String
+  cnh_categoria   String
+  cnv_status      Boolean
+  telefone        String
+  peso            Int
+  altura          Int
+  endereco        String
+  bairro          String
+  cep             Int
+  curso           Curso_candidato[]
+
+  @@unique([cpf_num])
+  @@map("candidatos")
+}
+
+model Curso {
+  id              String            @id @default(uuid())
+  nome_curso      String
+  descricao_curso String
+  candidato       Curso_candidato[]
+
+  @@unique([nome_curso])
+  @@map("cursos")
+}
+
+model Curso_candidato {
+  id           String     @id @default(uuid())
+  Candidato    Candidato? @relation(fields: [candidato_id], references: [id])
+  candidato_id String
+  Curso        Curso?     @relation(fields: [curso_id], references: [id])
+  curso_id     String
+
+  @@unique([candidato_id, curso_id])
+  @@map("curso_candidato")
+}
