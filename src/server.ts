@@ -8,6 +8,6 @@ app.register(routesBook)
 
 
 app.listen({port: 3000}, () => {
-    console.log('Server running!!!');
+    console.log(app.server.address());
 })
  

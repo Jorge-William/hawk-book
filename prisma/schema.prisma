@@ -18,8 +18,8 @@ generator erd {
 model Candidato {
   id              String            @id @default(uuid())
   nome            String
-  cpf_num         Int
-  data_nascimento DateTime
+  cpf_num         String
+  data_nascimento DateTime?
   nome_da_mae     String
   nome_do_pai     String
   cnh_categoria   String
@@ -30,7 +30,7 @@ model Candidato {
   endereco        String
   bairro          String
   cep             Int
-  curso           Curso_candidato[]
+  curso_candidato Curso_candidato[]
   img_frente      String
   img_perfil      String
 
@@ -51,8 +51,8 @@ model Curso {
 model Curso_candidato {
   id           String     @id @default(uuid())
   Candidato    Candidato? @relation(fields: [candidato_id], references: [id])
-  candidato_id String
   Curso        Curso?     @relation(fields: [curso_id], references: [id])
+  candidato_id String
   curso_id     String
 
   @@unique([candidato_id, curso_id])
