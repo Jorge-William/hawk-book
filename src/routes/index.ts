@@ -116,5 +116,11 @@ export async function routesBook(app: FastifyInstance) {
       response.send({ msg: error });
     }
   });
+   // ------------------------- Retorna todos os candidatos --------------------------------
 
+   app.get("/todos-candidatos", async (request, response) => {
+	const todosCandidatos = await prisma.candidato.findMany()
+
+	response.status(200).send({result: todosCandidatos})
+  })
 }
