@@ -123,4 +123,13 @@ export async function routesBook(app: FastifyInstance) {
 
 	response.status(200).send({result: todosCandidatos})
   })
+
+  app.get("/todos-cursos", async (request, response) => {
+	
+	const todosCursos = await prisma.curso.findMany()
+
+	response.status(200).send({result: todosCursos})
+  })
+
+
 }
