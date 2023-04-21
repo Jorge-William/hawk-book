@@ -5,16 +5,17 @@ import bodyParser from 'body-parser'
 import express from 'express'
 
 const app = express()
-
-const corsOptions = {
-    origin: "http://localhost:5001/",
-  };
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+const corsOptions = {
+    origin: "http://localhost:3000/",
+};
+  
 app.use(rotas)
-app.use(express.static("build"))
+
 app.use(cors(corsOptions));
+app.use(express.static("build"))
 const PORT = process.env.PORT
 
 

@@ -16,45 +16,45 @@ generator erd {
 }
 
 model Candidato {
-  id              String            @id @default(uuid())
+  id              String  @id @default(uuid())
   nome            String
   cpf_num         String
-  data_nascimento DateTime?
-  nome_da_mae     String
-  nome_do_pai     String
-  cnh_categoria   String
-  cnv_status      Boolean
-  telefone        String
-  peso            Int
-  altura          Int
-  endereco        String
-  bairro          String
-  cep             Int
-  curso_candidato Curso_candidato[]
-  img_frente      String
-  img_perfil      String
+  data_nascimento String?
+  nome_da_mae     String?
+  nome_do_pai     String?
+  cnh_categoria   String?
+  cnv_status      String?
+  telefone        String?
+  peso            String?
+  altura          String?
+  endereco        String?
+  bairro          String?
+  cep             String?
+  curso           Curso[]
+  img_frente      String?
+  img_perfil      String?
 
   @@unique([cpf_num])
   @@map("candidatos")
 }
 
 model Curso {
-  id              String            @id @default(uuid())
+  id              String      @id @default(uuid())
   nome_curso      String
   descricao_curso String
-  candidato       Curso_candidato[]
+  candidato       Candidato[]
 
   @@unique([nome_curso])
   @@map("cursos")
 }
 
-model Curso_candidato {
-  id           String     @id @default(uuid())
-  Candidato    Candidato? @relation(fields: [candidato_id], references: [id])
-  Curso        Curso?     @relation(fields: [curso_id], references: [id])
-  candidato_id String
-  curso_id     String
+// model CursoCandidato {
+//   cursoId String
+//   curso   Curso  @relation(fields: [cursoId], references: [id])
 
-  @@unique([candidato_id, curso_id])
-  @@map("curso_candidato")
-}
+//   candidatoId String
+//   candidato   Candidato
+
+//   @@id([cursoId, candidatoId])
+//   @@map("curso_candidato")
+// }
