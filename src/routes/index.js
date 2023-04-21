@@ -5,6 +5,7 @@ import multer from 'multer'
 // import path from 'path'
 import fs from 'fs/promises'
 import storage from "../config/multer.config"
+import ControllerCandidato from "../controllers/Candidatos.controller";
 
 const router = express.Router()
 
@@ -155,11 +156,8 @@ router.post("/inserir-curso", async (request, response) => {
 });
 // ------------------------- Retorna todos os candidatos --------------------------------
 
-router.get("/todos-candidatos", async (request, response) => {
-  const todosCandidatos = await prisma.candidato.findMany()
+router.get("/candidatos", ControllerCandidato.index);
 
-  response.status(200).send({ result: todosCandidatos })
-})
 
 router.get("/todos-cursos", async (request, response) => {
 
