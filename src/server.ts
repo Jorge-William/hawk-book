@@ -16,6 +16,19 @@ app.use(rotas)
 
 app.use(cors(corsOptions));
 app.use(express.static("build"))
+
+app.use(function(err, req, res, next) {
+  // Define o status HTTP do erro (padrão é 500)
+  res.status(err.status || 500);
+
+  // Retorna uma resposta JSON com a mensagem de erro
+  res.send(
+    { 
+      mensagem: err.message
+    
+    });
+});
+
 const PORT = process.env.PORT
 
 

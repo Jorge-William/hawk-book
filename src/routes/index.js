@@ -120,15 +120,15 @@ router.post("/inserir-candidato", criaPasta, upload.array('files'),
 
 // ---------------------------- Insere um Curso ---------------------------------
 
-router.post("/inserir-curso", async (request, response) => {
+router.post("/inserir-curso", async (request, response, next) => {
   console.log(request.body);
 
-  const cursoData = z.object({
-    nome_curso: z.string(),
-    descricao_curso: z.string(),
-  });
+  // const cursoData = z.object({
+  //   nome_curso: z.string(),
+  //   descricao_curso: z.string(),
+  // });
 
-  const { nome_curso, descricao_curso } = cursoData.parse(request.body);
+  const { nome_curso, descricao_curso } = request.body;
 
   try {
     const registroJaExiste = await prisma.curso.findFirst({
@@ -139,8 +139,12 @@ router.post("/inserir-curso", async (request, response) => {
       },
     });
 
+    console.log(registroJaExiste);
     if (registroJaExiste) {
-      response.send({ status: false, "msg": "Registro já existe no sistema" });
+      // response.send({ status: false, "msg": "Registro já existe no sistema" });
+      const error = new Error('Usuário já existe!')
+
+      return next(error)
     }
     const criarCurso = await prisma.curso.create({
       data: {
@@ -148,10 +152,10 @@ router.post("/inserir-curso", async (request, response) => {
         descricao_curso,
       },
     });
-    response.status(200).send({ status: true, "msg": "Registro salvo." });
+    response.status(200).send({ status: true, "msg": "Registro salvo.", criarCurso });
   } catch (error) {
     console.error(error);
-    response.send({ msg: error });
+    response.send({ status: false, error, msg: 'Curso já existe no sistema.' });
   }
 });
 // ------------------------- Retorna todos os candidatos --------------------------------
