@@ -1,9 +1,10 @@
 import { prisma } from "../lib/prisma";
-import { uuid as uuidv4 } from 'uuid'
+// import { uuid as uuidv4 } from 'uuid'
 import express from 'express'
 import multer from 'multer'
 // import path from 'path'
 import fs from 'fs/promises'
+import path from 'path'
 import storage from "../config/multer.config"
 import ControllerCandidato from "../controllers/Candidatos.controller";
 
@@ -21,112 +22,143 @@ const criaPasta = async (req, res, next) => {
   next()
 }
 
-// router.use("/imagens", express.static("/"));
 
-router.post("/inserir-candidato", criaPasta, upload.array('files'),
-  async (req, res) => {
-    const caminho = 'teste'
 
-    const {
-      nome,
-      cpf_num,
-      data_nascimento,
-      nome_da_mae,
-      nome_do_pai,
-      cnh_categoria,
-      cnv_status,
-      telefone,
-      peso,
-      altura,
-      endereco,
-      bairro,
-      cep,
-    } = req.body;
+router.post("/inserir-candidato", criaPasta, upload.array('files'), async (req, res) => {
 
-    if (req.body.cursos) {
+  const caminhoImgFrente = req.files[0].path;
+  const caminhoImgPerfil = req.files[1].path;
 
-      const arrayDeCursos = req.body.cursos.split(",");
+  // arquivo com terminação - nome_do_arquivo.pdf
+  const arquivoFrente = path.basename(caminhoImgFrente);
+  const arquivoPerfil = path.basename(caminhoImgPerfil);
+  // console.log(arquivo);
 
-      try {
+  // caminho do arquivo
+  // console.log(path.dirname(caminho));
 
-        const criarCandidato = await prisma.candidato.create({
-          data: {
-            nome,
-            cpf_num,
-            data_nascimento,
-            nome_da_mae,
-            nome_do_pai,
-            cnh_categoria,
-            cnv_status,
-            telefone,
-            peso,
-            altura,
-            endereco,
-            bairro,
-            cep,
-            img_frente: caminho,
-            img_perfil: caminho,
-            curso: {
-              connect: arrayDeCursos.map((curso) => { return { id: curso } }),
-            },
+  // nome do arquivo - L8889L071
+  const nomeFrente = path.basename(caminhoImgFrente, path.extname(caminhoImgFrente));
+  const nomePerfil = path.basename(caminhoImgPerfil, path.extname(caminhoImgPerfil));
+  // console.log(nomeDoArquivo);
+
+  // caminho do arquivo - /pastas/lei/L8889/L8889L071.pdf
+  const caminhoDoArquivoFrente = path.join(
+    `/imagens/${req.body.nome}/${arquivoFrente}`,
+  );
+  const caminhoDoArquivoPerfil = path.join(
+    `/imagens/${req.body.nome}/${arquivoPerfil}`,
+  );
+
+  // console.log(caminhoDoArquivo);
+
+
+  const {
+    nome,
+    cpf_num,
+    data_nascimento,
+    nome_da_mae,
+    nome_do_pai,
+    cnh_categoria,
+    cnv_status,
+    telefone,
+    peso,
+    altura,
+    endereco,
+    cidade,
+    bairro,
+    tipo,
+    cep,
+  } = req.body;
+
+  if (req.body.cursos) {
+
+    const arrayDeCursos = req.body.cursos.split(",");
+
+    try {
+
+      const criarCandidato = await prisma.candidato.create({
+        data: {
+          nome,
+          cpf_num,
+          data_nascimento,
+          nome_da_mae,
+          nome_do_pai,
+          cnh_categoria,
+          cnv_status,
+          telefone,
+          peso,
+          altura,
+          endereco,
+          bairro,
+          cidade,
+          cep,
+          tipo,
+          img_frente: arquivoFrente,
+          img_perfil: arquivoPerfil,
+          curso: {
+            connect: arrayDeCursos.map((curso) => { return { id: curso } }),
           },
-          include: {
-            curso: true, // Include all posts in the returned object
-          },
-        });
+        },
+        include: {
+          curso: true, // Include all posts in the returned object
+        },
+      });
 
+      if (criarCandidato) {
         res.send({ "status": true, msg: "Candidato salvo!!!", criarCandidato });
-
-
-      } catch (error) {
-        console.log(error);
-        res.send({ status: false, error })
       }
 
-    } else {
 
-      try {
-
-        const criarCandidato = await prisma.candidato.create({
-          data: {
-            nome,
-            cpf_num,
-            data_nascimento,
-            nome_da_mae,
-            nome_do_pai,
-            cnh_categoria,
-            cnv_status,
-            telefone,
-            peso,
-            altura,
-            endereco,
-            bairro,
-            cep,
-            img_frente: caminho,
-            img_perfil: caminho,
-          }
-
-        })
-
-        res.send({ status: true, msg: "Candidato salvo com sucesso!!! Sem cursos", criarCandidato })
-
-      } catch (error) {
-        console.log(error);
-        res.send({ status: false, error })
-      }
+    } catch (error) {
+      console.log(error);
+      res.send({ status: false, error })
     }
 
-  });
+  } else {
+
+    try {
+
+      const criarCandidato = await prisma.candidato.create({
+        data: {
+          nome,
+          cpf_num,
+          data_nascimento,
+          nome_da_mae,
+          nome_do_pai,
+          cnh_categoria,
+          cnv_status,
+          telefone,
+          peso,
+          altura,
+          endereco,
+          bairro,
+          cidade,
+          cep,
+          tipo,
+          img_frente: arquivoFrente,
+          img_perfil: arquivoPerfil,
+        }
+
+      })
+      if (criarCandidato) {
+        res.send({ status: true, msg: "Candidato salvo com sucesso!!! Sem cursos", criarCandidato })
+      }
+
+    } catch (error) {
+      console.log(error);
+      res.send({ status: false, error })
+    }
+  }
+
+});
 
 // ---------------------------- Insere um Curso ---------------------------------
 
 router.post("/inserir-curso", async (request, response, next) => {
   console.log(request.body);
 
-  // const cursoData = z.object({
-  //   nome_curso: z.string(),
-  //   descricao_curso: z.string(),
-  // });
+
 
   const { nome_curso, descricao_curso } = request.body;
 
